@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://unpkg.com/react@15.4.2/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15.4.2/dist/react-dom.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+        <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
+    </head>
+    <body>
+        <div id="app"></div>
+
+        <script type="text/babel">
+
+          var Answer;
+          var Number = [];
+          var A=0;
+          var B=0;
+
+          class GuessNumber extends React.Component {
+
+            constructor(props) {
+              super(props);
+                this.state = {
+                  text : '',
+                  msg : [],
+                  subbut : true
+                };
+              }
+
+              startgame = (e) => {
+                for (var i=0 ; i<=3; i++) {
+                  Number[i] = Math.floor(Math.random() * 10);
+                    for (var j=0 ; j<i ; j++) {
+                      if (Number[i] == Number[j]) {
+                        i--;
+                        }
+                    }
+                }
+                Answer = Number;
+                console.log(Answer);
+                this.setState({
+                  subbut : false
+                });
+              }
+
+              resetgame = (e) => {
+                window.location.reload();
+              }
+
+              handleOnChange = (e) => {
+                this.setState({
+                  text: e.target.value
+                });
+              }
+
+              ViewAnswer = (e) => {
+                alert("答案是" + Answer);
+              }
+
+              handleOnClick = (e) => {
+                var guess = this.state.text;
+
+                var guearray = [];
+                var thousand = Math.floor(guess / 1000);
+                var hundred = Math.floor((guess % 1000) / 100);
+                var ten = Math.floor((guess % 100) / 10);
+                var bit = Math.floor(guess % 10);
+                guearray[0] = thousand;
+                guearray[1] = hundred;
+                guearray[2] = ten;
+                guearray[3] = bit;
+
+                if (guess.length != 4) {
+                  alert("請輸入4位數字");
+                  return;
+                }
+
+                for (var i=0 ; i<=3 ; i++) {
+                  for (var j = 0; j<=3 ; j++) {
+                    if (i != j && guearray[i] == guearray[j]) {
+                      alert("請輸入不重複的數字");
+                      return;
+                    }
+                  }
+                }
+
+                for (var i = 0; i<=3 ; i++) {
+                  if (guearray[i] == Answer[i]) {
+                    A++
+                  } else {
+                  for (var j = 0; j<=3 ; j++) {
+                    if (guearray[i] == Answer[j]) {
+                      B++
+                    }
+                    }
+                  }
+                }
+
+                    this.setState({
+                      msg : [
+                      ...this.state.msg,
+                      guess + " " + A + "A" + B + "B"]
+                    });
+
+                  if (A == 4) {
+                    alert("您猜對了，答案是" + Answer);
+                  }
+                    A=0;
+                    B=0;
+
+              }
+
+              render() {
+              return (
+                <div>
+                  <button onClick={this.startgame}>Start</button>
+                  <button onClick={this.resetgame}>Reset</button>
+                  <input type="text" onChange={this.handleOnChange} />
+                  <button onClick={this.handleOnClick} disabled={this.state.subbut}>Submit</button>
+                  <button onClick={this.ViewAnswer} disabled={this.state.subbut}>View Answer</button>
+                  <Result msg={this.state.msg} />
+                </div>
+              );
+            }
+          }
+
+          class Result extends React.Component {
+            constructor(props){
+              super(props);
+            }
+
+            render() {
+              console.log(this.props.msg);
+              const self=this;
+            let result = this.props.msg.map(function(msgs, i) {
+              return(
+                <li key={i}>{msgs}</li>
+              );
+            });
+            return(
+            <div>
+              {result}
+            </div>
+            );
+          }
+          }
+
+
+
+            ReactDOM.render(
+                <GuessNumber />,
+                document.getElementById('app')
+            );
+        </script>
+    </body>
+</html>
